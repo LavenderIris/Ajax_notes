@@ -52,8 +52,10 @@
         <input type='submit' value='Submit' />
     </form>
 
+    <!-- <div id="placeholder1"></div> -->
+
     {% for note in notes %}
-    <h4>{{note.title}} <a href="/delete/{{note.id}}">Delete</a></h4>
+    <h4>{{note.title}} <a id='deleteplaceholder' href="/delete/{{note.id}}">Delete</a></h4>
      
      {% if note.desc|length > 0 %}
         <div>
@@ -97,9 +99,24 @@
             success: function(serverResponse) { /* What code should we run when the server responds? */
                 console.log("received from server:", serverResponse);
                 $('body').html(serverResponse)
-            }
-        })
+            }})
         });
+
+        $('#deleteplaceholder').submit(function(e){
+        e.preventDefault()
+        console.log('Sending Ajax request to', $(this).attr('action'))
+        console.log('Submitting the following data', $(this).serialize())
+        $.ajax({
+            url: $(this).attr('action'), /* Where should this go? */
+            method: 'post', /* Which HTTP verb? */
+            data: $(this).serialize(), /* Any data to send along? */
+            success: function(serverResponse) { /* What code should we run when the server responds? */
+                console.log("received from server:", serverResponse);
+                $('body').html(serverResponse)
+            }})
+        });
+
+
         // $('.placeholder').click(function(){
         //     $.ajax({
         //         url: '/toggle_desc/'+ $(this).attr('value'),
