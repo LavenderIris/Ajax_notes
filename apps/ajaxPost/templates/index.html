@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>Notes</title>
+</head>
+
+<style>
+    .border {
+        height: 119px;
+        width: 132px;
+        padding: 10px;
+        border: 1px solid;
+        display: inline-block;
+        text-align: center;
+        vertical-align: top;
+    }
+    
+    .red {
+        color: red;
+    }
+    
+    .green {
+        background-color: green;
+        color: white;
+    }
+   
+    
+    p {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .overflow{
+        overflow: scroll;
+        width: 30%;
+        height: 50px;
+    }
+</style>
+
+<body>
+    <h1>My Notes</h1>
+    
+    <form action='/create' method='post' class='ajax_form' id='create_user_ajax_form'>
+        {% csrf_token %}
+        Note: <input type='text' name='note'/>
+        <input type='submit' value='Submit' />
+    </form>
+
+    {% for note in notes %}
+    <h4>{{note.title}} <a href="/delete/{{note.id}}">Delete</a></h4>
+     
+     {% if note.desc|length > 0 %}
+        <div>
+            <div class ='placeholder overflow' value={{note.id}}> 
+                <p>{{note.desc}}</p>
+            </div>
+
+            <form style="display:none" action="/add_desc/{{note.id}}" method='post' id='create_user_ajax_form1' >
+                {% csrf_token %}
+                <textarea cols="30" rows="2" name='desc'>{{note.desc}}</textarea>
+                <input type="submit" value="Add Description">
+            </form>
+        </div>
+
+    {% else %}
+     <form action="/add_desc/{{note.id}}" method='post' id='create_user_ajax_form1' >
+         {% csrf_token %}
+         <textarea cols="30" rows="2" name='desc'>{{note.desc}}</textarea>
+         <input type="submit" value="Add Description">
+     </form>
+     {% endif %}
+     <br>
+     <!-- <div id='placeholder'></div> -->
+ 
+     <!-- </div>  -->
+    {% endfor %}
+
+
+    <!-- <div id='placeholder3' style='margin-top:35px; border:1px solid silver; width:750px; padding:10px;'>
+     
+    </div> -->
+    <script>
+        $('#create_user_ajax_form').submit(function(e){
+        e.preventDefault()
+        console.log('Sending Ajax request to', $(this).attr('action'))
+        console.log('Submitting the following data', $(this).serialize())
+        $.ajax({
+            url: $(this).attr('action'), /* Where should this go? */
+            method: 'post', /* Which HTTP verb? */
+            data: $(this).serialize(), /* Any data to send along? */
+            success: function(serverResponse) { /* What code should we run when the server responds? */
+                console.log("received from server:", serverResponse);
+                $('body').html(serverResponse)
+            }
+        })
+        });
+        // $('.placeholder').click(function(){
+        //     $.ajax({
+        //         url: '/toggle_desc/'+ $(this).attr('value'),
+        //         success: function(serverResponse) {  
+        //           console.log("Received this from server:", serverResponse)
+        //         //   $('#placeholder1').html(serverResponse)
+        //         }
+
+        //     })
+        $('.placeholder').click(function(){
+            console.log('in placeholder')
+            $(this).children('p').toggle();
+            $(this).siblings('form').toggle();
+
+        });        
+
+    </script>
+
+</body>
+
+</html>

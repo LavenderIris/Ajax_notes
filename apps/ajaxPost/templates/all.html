@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <title>AJAX Note</title>
+</head>
+
+<style>
+    .overflow{
+        overflow: scroll;
+    }
+</style>
+
+<body>
+    {% for note in notes %}
+       <div>{{note.title}} <a href="/delete/{{note.id}}">Delete</a>
+        <br>
+        
+        <div>
+            {{note.desc}}
+        </div>
+        <form action="/add_desc/{{note.id}}" method='post' id='create_user_ajax_form1' >
+            {% csrf_token %}
+            <textarea cols="30" rows="2" name='desc'></textarea>
+            <input type="submit" value="Add Description">
+        </form>
+        <!-- <div id='placeholder'></div> -->
+    
+        <!-- </div>  -->
+    {% endfor %}
+
+    <script>
+        $('#create_user_ajax_form1').submit(function(e){
+        e.preventDefault()
+        $.ajax({
+            url: $(this).attr('action'), /* Where should this go? */
+            method: 'post', /* Which HTTP verb? */
+            data: $(this).serialize(), /* Any data to send along? */
+            success: function(serverResponse) { /* What code should we run when the server responds? */
+            $('#placeholder').html(serverResponse)
+            }
+        })
+        });
+    </script>
+</body>
+
+</html>
